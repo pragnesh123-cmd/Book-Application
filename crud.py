@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 import models, schemas
-
+import requests
 
 def get_all_address_books(db: Session):
     return db.query(models.AddressBook).all()
@@ -16,7 +16,12 @@ def get_single_address_books(db: Session,address_book_id:id):
     }
 
 def create_addressbook(db: Session,item: schemas.AddressCreate):
-    db_user = models.AddressBook(address=item.address,lat=item.lat,long=item.long)
+    url = f"https://api.geoapify.com/v1/geocode/search?text={item.address}&type=city&format=json&apiKey=1fbc2f263ab342f2b40c9f17ae2c9f2d"
+    response = requests.get(url)
+    r = response.json()
+    long = r.get("results")[0].get("lon")
+    lat = r.get("results")[0].get("lat")
+    db_user = models.AddressBook(address=item.address,lat=lat,long=long)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

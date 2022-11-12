@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 import crud, models, schemas
 from database import SessionLocal, engine
 import models
+import requests
 
 
 models.Base.metadata.create_all(bind=engine)
